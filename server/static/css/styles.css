@@ -1,3 +1,38 @@
+body {
+    font-family: “Gill Sans”, “Gill Sans MT”, Calibri, sans-serif;
+    line-height: 1.2;
+}
+
+header {
+    background: #ddd;
+    min-height: 80px;
+    border-bottom: 1px solid #111;
+    padding-top: 20px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 250%;
+    font-weight: bold;
+}
+
+header p {
+    font-size: 80%;
+    margin-bottom: 0.5em;
+}
+
+ul {
+    margin: 20px 0;
+}
+
+li {
+    list-style-type: disc;
+}
+
+strong {
+    font-weight: bold;
+}
+
 span {
     display: block;
     position: relative;
@@ -47,5 +82,7 @@ span.nonoffset {
     border: 1px solid blue;
     background: #99f;
     padding: 10px;
+    margin: 50px 0;
+
 }
 
