@@ -1,9 +1,10 @@
 span {
-    display: inline-block;
-    margin-top: 100px;
-    margin-right: 10px;
-    min-height: 200px;
-    min-width: 50px;
+    display: block;
+    position: relative;
+    margin-top: 50px;
+    min-height: 250px;
+    margin-left: -25px;
+    width: 50px;
     border: 3px solid black;
     text-align: center;
     float: left;
@@ -15,8 +16,36 @@ span {
     user-select: none;
 }
 
-span.sharps {
+.sharps {
+    min-height: 200px;
     margin-top: 0;
     background-color: black;
     color: white;
+    z-index: 10;
 }
+
+span.nonoffset {
+    margin-left: 5px;
+}
+
+.content {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 960px;
+}
+
+.myNote {
+    background-color: #ff5;
+}
+
+.theirNote {
+    background-color: #5ff;
+}
+
+.gamestatus {
+    border-radius: 10px;
+    border: 1px solid blue;
+    background: #99f;
+    padding: 10px;
+}
+

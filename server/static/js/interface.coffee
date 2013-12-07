@@ -15,15 +15,17 @@ init = ->
 
 attachListeners = ->
   $('span').each (i, el) ->
-    $(el).mousedown ->
+    $(el).mousedown (ev) ->
+      ev.stopPropagation()
       note = $(el).data 'note'
       MIDI.noteOn MIDI_CHANNEL, note, MIDI_VOLUME, 0
       socket.emit 'note_on', note
+      $(el).addClass 'myNote'
 
     $(el).mouseup ->
       note = $(el).data 'note'
-      MIDI.noteOff MIDI_CHANNEL, note
       socket.emit 'note_off', note
+      $(el).removeClass 'myNote'
 
   socket.on 'note_on', (note) ->
     MIDI.noteOn MIDI_CHANNEL, note, MIDI_VOLUME, 0
@@ -31,3 +33,10 @@ attachListeners = ->
   socket.on 'note_off', (note) ->
     MIDI.noteOff MIDI_CHANNEL, note
 
+  socket.on 'target', (target) ->
+    updateStatus "Play a #{target}!"
+
+
+updateStatus = (string) ->
+  $('.gamestatus').each (i, el) ->
+    $(el).text(string)
