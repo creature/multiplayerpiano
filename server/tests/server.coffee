@@ -1,9 +1,9 @@
 test = require('tap').test
 MIDIUtil = require('../server.js').MIDIUtil
+ChordGenerator = require('../server.js').ChordGenerator
 
 test "Ensure that MIDI conversion works OK.", (t) ->
   mu = new MIDIUtil
-  cg = new ChordGenerator
   t.test "Ensure that note resolution works.", (t) =>
     t.equal mu.midiToNoteName(60), "C"
     t.equal mu.midiToNoteName(79), "G"
@@ -17,3 +17,9 @@ test "Ensure that MIDI conversion works OK.", (t) ->
     t.equal mu.offsetFromRoot("C", "F#"), 6
     t.equal mu.offsetFromRoot("A", "D"), 5
     t.end()
+
+test "Check array comparison.", (t) ->
+  cg = new ChordGenerator
+  t.ok cg.arraysEqual(["A"], ["A"]), "Arrays with A in are equal."
+  t.notOk cg.arraysEqual(["A"], ["B"]), "Arrays with A and B in are not equal."
+  t.end()

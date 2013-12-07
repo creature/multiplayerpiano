@@ -1,6 +1,8 @@
 socket = io.connect()
 MIDI_CHANNEL = 0
 MIDI_VOLUME = 127
+LATCH_MODE = true
+GAME_OVER = false
 
 $(document).ready ->
   init()
@@ -15,17 +17,29 @@ init = ->
 
 attachListeners = ->
   $('span').each (i, el) ->
-    $(el).mousedown (ev) ->
-      ev.stopPropagation()
-      note = $(el).data 'note'
-      MIDI.noteOn MIDI_CHANNEL, note, MIDI_VOLUME, 0
-      socket.emit 'note_on', note
-      $(el).addClass 'myNote'
+    $el = $(el)
+    $el.mousedown (ev) ->
+      unless GAME_OVER
+        note = $el.data 'note'
+        if LATCH_MODE
+          if $el.hasClass 'myNote'
+            MIDI.noteOff MIDI_CHANNEL, note, MIDI_VOLUME, 0
+            socket.emit 'note_off', note
+            $el.removeClass 'myNote'
+          else
+            MIDI.noteOn MIDI_CHANNEL, note, MIDI_VOLUME, 0
+            socket.emit 'note_on', note
+            $el.addClass 'myNote'
+        else
+          MIDI.noteOn MIDI_CHANNEL, note, MIDI_VOLUME, 0
+          socket.emit 'note_on', note
+          $el.addClass 'myNote'
 
-    $(el).mouseup ->
-      note = $(el).data 'note'
-      socket.emit 'note_off', note
-      $(el).removeClass 'myNote'
+    $el.mouseup ->
+      unless LATCH_MODE
+        note = $el.data 'note'
+        socket.emit 'note_off', note
+        $el.removeClass 'myNote'
 
   socket.on 'note_on', (note) ->
     MIDI.noteOn MIDI_CHANNEL, note, MIDI_VOLUME, 0
@@ -35,6 +49,10 @@ attachListeners = ->
 
   socket.on 'target', (target) ->
     updateStatus "Play a #{target}!"
+
+  socket.on 'gameOver', (score) ->
+    GAME_OVER = true
+    updateStatus "Game over! Your team scored #{score}."
 
 
 updateStatus = (string) ->

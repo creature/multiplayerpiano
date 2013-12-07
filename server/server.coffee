@@ -17,21 +17,46 @@ io = require('socket.io').listen server
 ###### EXTRACT THIS LATER 
 
 class ChordGenerator extends events.EventEmitter
-  NOTES_MAJOR = [0, 4, 7]
-  NOTES_MINOR = [0, 3, 7]
-  ROOTS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'G', 'G#', 'A', 'Bb', 'B']
-  TYPES = ['Major', 'Minor']
-  @target = null
-  @notes = []
+  @NOTES_MAJOR = [0, 4, 7]
+  @NOTES_MINOR = [0, 3, 7]
+  @ROOTS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B']
+  @TYPES = ['Major', 'Minor']
+
+  constructor: ->
+    @target = null
+    @notes = []
+    @mu = new MIDIUtil
 
   getRandomChord: =>
-    @current = ROOTS[Math.floor(Math.random() * ROOTS.length)]
+    @current = ChordGenerator.ROOTS[Math.floor(Math.random() * ChordGenerator.ROOTS.length)]
+    @currentNotes = []
+    for i in ChordGenerator.NOTES_MAJOR
+      @currentNotes.push ChordGenerator.ROOTS[(ChordGenerator.ROOTS.indexOf(@current) + i) % ChordGenerator.ROOTS.length]
+    @current
 
   noteOn: (note) =>
-    @notes.push(note)
+    console.log "Note on: #{@mu.midiToNoteName note}"
+    @notes.push(@mu.midiToNoteName note)
+    console.log "Notes: #{@notes}"
+    console.log "CurrentNotes: #{@currentNotes}"
+    console.log "Value: " + this.arraysEqual @notes, @currentNotes
+    if this.arraysEqual @notes, @currentNotes
+      console.log "Chord matched!"
+      this.emit 'chordMatched'
 
   noteOff: (note) =>
-    @notes = @notes.filter (x) -> x isnt note
+    @notes = (x for x in @notes when x != @mu.midiToNoteName note)
+
+  arraysEqual: (a, b) ->
+    unless a instanceof Array and b instanceof Array
+      return false
+    unless a.length is b.length
+      return false
+    for x in a
+      if b.indexOf(x) < 0
+        return false
+    return true
+
 exports.ChordGenerator = ChordGenerator
 
 
@@ -43,11 +68,18 @@ class Game extends events.EventEmitter
     @chordGenerator = new ChordGenerator # Generator for chords
     @score = 0 # Number of successfully played chords
     @timeout = null # How long until we finish the game?
-    @notes = []
+    
+    @chordGenerator.on 'chordMatched', =>
+      @score += 1
+      this.newTurn()
 
   addPlayer: (player) =>
     console.log "Adding player (game)"
     @players.push player
+    player.on 'note_on', (note) => 
+      @chordGenerator.noteOn note
+    player.on 'note_off', (note) =>
+      @chordGenerator.noteOff note
 
   start: =>
     # Run a game. 

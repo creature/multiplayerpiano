@@ -24,9 +24,16 @@
   io = require('socket.io').listen(server);
 
   ChordGenerator = (function(_super) {
-    var NOTES_MAJOR, NOTES_MINOR, ROOTS, TYPES;
 
     __extends(ChordGenerator, _super);
+
+    ChordGenerator.NOTES_MAJOR = [0, 4, 7];
+
+    ChordGenerator.NOTES_MINOR = [0, 3, 7];
+
+    ChordGenerator.ROOTS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
+
+    ChordGenerator.TYPES = ['Major', 'Minor'];
 
     function ChordGenerator() {
       var _this = this;
@@ -39,33 +46,66 @@
       this.getRandomChord = function() {
         return ChordGenerator.prototype.getRandomChord.apply(_this, arguments);
       };
-      return ChordGenerator.__super__.constructor.apply(this, arguments);
+      this.target = null;
+      this.notes = [];
+      this.mu = new MIDIUtil;
     }
 
-    NOTES_MAJOR = [0, 4, 7];
-
-    NOTES_MINOR = [0, 3, 7];
-
-    ROOTS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'G', 'G#', 'A', 'Bb', 'B'];
-
-    TYPES = ['Major', 'Minor'];
-
-    ChordGenerator.target = null;
-
-    ChordGenerator.notes = [];
-
     ChordGenerator.prototype.getRandomChord = function() {
-      return this.current = ROOTS[Math.floor(Math.random() * ROOTS.length)];
+      var i, _i, _len, _ref;
+      this.current = ChordGenerator.ROOTS[Math.floor(Math.random() * ChordGenerator.ROOTS.length)];
+      this.currentNotes = [];
+      _ref = ChordGenerator.NOTES_MAJOR;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        i = _ref[_i];
+        this.currentNotes.push(ChordGenerator.ROOTS[(ChordGenerator.ROOTS.indexOf(this.current) + i) % ChordGenerator.ROOTS.length]);
+      }
+      return this.current;
     };
 
     ChordGenerator.prototype.noteOn = function(note) {
-      return this.notes.push(note);
+      console.log("Note on: " + (this.mu.midiToNoteName(note)));
+      this.notes.push(this.mu.midiToNoteName(note));
+      console.log("Notes: " + this.notes);
+      console.log("CurrentNotes: " + this.currentNotes);
+      console.log("Value: " + this.arraysEqual(this.notes, this.currentNotes));
+      if (this.arraysEqual(this.notes, this.currentNotes)) {
+        console.log("Chord matched!");
+        return this.emit('chordMatched');
+      }
     };
 
     ChordGenerator.prototype.noteOff = function(note) {
-      return this.notes = this.notes.filter(function(x) {
-        return x !== note;
-      });
+      var x;
+      return this.notes = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.notes;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          x = _ref[_i];
+          if (x !== this.mu.midiToNoteName(note)) {
+            _results.push(x);
+          }
+        }
+        return _results;
+      }).call(this);
+    };
+
+    ChordGenerator.prototype.arraysEqual = function(a, b) {
+      var x, _i, _len;
+      if (!(a instanceof Array && b instanceof Array)) {
+        return false;
+      }
+      if (a.length !== b.length) {
+        return false;
+      }
+      for (_i = 0, _len = a.length; _i < _len; _i++) {
+        x = a[_i];
+        if (b.indexOf(x) < 0) {
+          return false;
+        }
+      }
+      return true;
     };
 
     return ChordGenerator;
@@ -97,12 +137,22 @@
       this.chordGenerator = new ChordGenerator;
       this.score = 0;
       this.timeout = null;
-      this.notes = [];
+      this.chordGenerator.on('chordMatched', function() {
+        _this.score += 1;
+        return _this.newTurn();
+      });
     }
 
     Game.prototype.addPlayer = function(player) {
+      var _this = this;
       console.log("Adding player (game)");
-      return this.players.push(player);
+      this.players.push(player);
+      player.on('note_on', function(note) {
+        return _this.chordGenerator.noteOn(note);
+      });
+      return player.on('note_off', function(note) {
+        return _this.chordGenerator.noteOff(note);
+      });
     };
 
     Game.prototype.start = function() {
