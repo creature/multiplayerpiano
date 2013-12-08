@@ -18,5 +18,9 @@
 
     "scripts": {
         "test": "tap ./tests"
+    },
+
+    "engines": {
+        "node": "0.10.22"
     }
 }
