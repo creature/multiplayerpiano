@@ -13,7 +13,7 @@ server = http.createServer app
 server.listen process.env.PORT or 4000
 io = require('socket.io').listen server
 
-PLAYERS_PER_GAME = 5
+PLAYERS_PER_GAME = 4
 
 ###### EXTRACT THIS LATER 
 
