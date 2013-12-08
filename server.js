@@ -24,7 +24,7 @@
 
   io = require('socket.io').listen(server);
 
-  PLAYERS_PER_GAME = 1;
+  PLAYERS_PER_GAME = 5;
 
   ChordGenerator = (function(_super) {
 
