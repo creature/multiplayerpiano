@@ -106,7 +106,7 @@ class Game extends events.EventEmitter
     p.emit('gameOver', @level, @score) for p in @players
 
 class GameServer extends events.EventEmitter
-  @PLAYERS_PER_GAME = 1
+  @PLAYERS_PER_GAME = 3
   constructor: ->
     @waitingroom = []
     @games = []

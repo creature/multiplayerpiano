@@ -1,7 +1,7 @@
 socket = io.connect()
 MIDI_CHANNEL = 0
 MIDI_VOLUME = 127
-LATCH_MODE = true
+LATCH_MODE = false
 GAME_OVER = false
 
 $(document).ready ->

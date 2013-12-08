@@ -214,7 +214,7 @@
 
     __extends(GameServer, _super);
 
-    GameServer.PLAYERS_PER_GAME = 1;
+    GameServer.PLAYERS_PER_GAME = 3;
 
     function GameServer() {
       this.waitingroom = [];
