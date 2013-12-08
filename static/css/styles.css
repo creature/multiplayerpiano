@@ -57,6 +57,7 @@ strong {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
