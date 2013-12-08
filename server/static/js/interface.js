@@ -62,13 +62,19 @@
       });
     });
     socket.on('note_on', function(note) {
-      return MIDI.noteOn(MIDI_CHANNEL, note, MIDI_VOLUME, 0);
+      MIDI.noteOn(MIDI_CHANNEL, note, MIDI_VOLUME, 0);
+      return $("span[data-note='" + note + "']").each(function(i, el) {
+        return $(el).addClass('theirNote');
+      });
     });
     socket.on('note_off', function(note) {
-      return MIDI.noteOff(MIDI_CHANNEL, note);
+      MIDI.noteOff(MIDI_CHANNEL, note);
+      return $("span[data-note='" + note + "']").each(function(i, el) {
+        return $(el).removeClass('theirNote');
+      });
     });
     socket.on('target', function(target) {
-      return updateStatus("Play a " + target + "!");
+      return updateStatus("Play a " + target + " major!");
     });
     return socket.on('gameOver', function(score) {
       GAME_OVER = true;

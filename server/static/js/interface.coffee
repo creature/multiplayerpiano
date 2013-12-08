@@ -43,12 +43,16 @@ attachListeners = ->
 
   socket.on 'note_on', (note) ->
     MIDI.noteOn MIDI_CHANNEL, note, MIDI_VOLUME, 0
+    $("span[data-note='#{note}']").each (i, el) ->
+      $(el).addClass('theirNote')
 
   socket.on 'note_off', (note) ->
     MIDI.noteOff MIDI_CHANNEL, note
+    $("span[data-note='#{note}']").each (i, el) ->
+      $(el).removeClass('theirNote')
 
   socket.on 'target', (target) ->
-    updateStatus "Play a #{target}!"
+    updateStatus "Play a #{target} major!"
 
   socket.on 'gameOver', (score) ->
     GAME_OVER = true
