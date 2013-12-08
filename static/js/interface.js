@@ -44,7 +44,7 @@
   };
 
   attachListeners = function() {
-    $('span').each(function(i, el) {
+    $('.notes span').each(function(i, el) {
       var $el;
       $el = $(el);
       $el.mousedown(function(ev) {
@@ -68,7 +68,15 @@
           }
         }
       });
-      return $el.mouseup(function() {
+      $el.mouseup(function() {
+        var note;
+        if (!LATCH_MODE) {
+          note = $el.data('note');
+          socket.emit('note_off', note);
+          return $el.removeClass('myNote');
+        }
+      });
+      return $el.mouseout(function() {
         var note;
         if (!LATCH_MODE) {
           note = $el.data('note');

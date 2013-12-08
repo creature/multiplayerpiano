@@ -28,7 +28,7 @@ gotit = (text) ->
   
 
 attachListeners = ->
-  $('span').each (i, el) ->
+  $('.notes span').each (i, el) ->
     $el = $(el)
     $el.mousedown (ev) ->
       unless GAME_OVER
@@ -48,6 +48,12 @@ attachListeners = ->
           $el.addClass 'myNote'
 
     $el.mouseup ->
+      unless LATCH_MODE
+        note = $el.data 'note'
+        socket.emit 'note_off', note
+        $el.removeClass 'myNote'
+    
+    $el.mouseout ->
       unless LATCH_MODE
         note = $el.data 'note'
         socket.emit 'note_off', note
