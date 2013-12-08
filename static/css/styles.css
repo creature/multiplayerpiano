@@ -60,7 +60,7 @@ strong {
     box-sizing: border-box;
 }
 
-.notes .sharps {
+span.sharps {
     min-height: 200px;
     margin-top: 0;
     background-color: black;
@@ -78,13 +78,18 @@ span.nonoffset {
     max-width: 960px;
 }
 
-.notes .myNote {
+span.hint {
+    background-color: #f55;
+}
+
+span.theirNote {
+    background-color: #5ff;
+}
+
+span.myNote {
     background-color: #ff5;
 }
 
-.notes .theirNote {
-    background-color: #5ff;
-}
 
 /* Prompts for what to do. */
 .gamestatus {

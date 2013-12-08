@@ -24,7 +24,7 @@
 
   io = require('socket.io').listen(server);
 
-  PLAYERS_PER_GAME = 2;
+  PLAYERS_PER_GAME = 1;
 
   ChordGenerator = (function(_super) {
 
@@ -40,6 +40,9 @@
 
     function ChordGenerator() {
       var _this = this;
+      this.getNotes = function() {
+        return ChordGenerator.prototype.getNotes.apply(_this, arguments);
+      };
       this.noteOff = function(note) {
         return ChordGenerator.prototype.noteOff.apply(_this, arguments);
       };
@@ -119,6 +122,10 @@
       return true;
     };
 
+    ChordGenerator.prototype.getNotes = function() {
+      return this.currentNotes;
+    };
+
     return ChordGenerator;
 
   })(events.EventEmitter);
@@ -186,7 +193,7 @@
     };
 
     Game.prototype.newTurn = function() {
-      var p, target, timeout, _i, _len, _ref, _results;
+      var p, target, timeout, _i, _j, _len, _len1, _ref, _ref1, _results;
       console.log("New turn.");
       timeout = 20000 - (1000 * this.level);
       if (this.timer != null) {
@@ -196,12 +203,19 @@
       target = this.chordGenerator.getRandomChord();
       console.log("Broadcasting target " + target + " to all players.");
       _ref = this.players;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         p = _ref[_i];
-        _results.push(p.emit('target', target, timeout));
+        p.emit('target', target, timeout);
       }
-      return _results;
+      if (this.level < 5) {
+        _ref1 = this.players;
+        _results = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          p = _ref1[_j];
+          _results.push(p.emit('hint', this.chordGenerator.getNotes()));
+        }
+        return _results;
+      }
     };
 
     Game.prototype.end = function() {

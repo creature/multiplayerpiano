@@ -13,7 +13,7 @@ server = http.createServer app
 server.listen process.env.PORT or 4000
 io = require('socket.io').listen server
 
-PLAYERS_PER_GAME = 2
+PLAYERS_PER_GAME = 1
 
 ###### EXTRACT THIS LATER 
 
@@ -62,6 +62,9 @@ class ChordGenerator extends events.EventEmitter
         return false
     return true
 
+  getNotes: =>
+    @currentNotes
+
 exports.ChordGenerator = ChordGenerator
 
 
@@ -104,6 +107,8 @@ class Game extends events.EventEmitter
     target = @chordGenerator.getRandomChord()
     console.log "Broadcasting target " + target + " to all players."
     p.emit('target', target, timeout) for p in @players
+    if @level < 5
+      p.emit('hint', @chordGenerator.getNotes()) for p in @players
   
   end: =>
     console.log "Game over; players scored #{@score}"

@@ -14,6 +14,7 @@ init = ->
     instrument: "acoustic_grand_piano"
     callback: ->
       MIDI.setVolume MIDI_CHANNEL, MIDI_VOLUME
+      attachHintListener()
 
 gotit = (text) ->
   $el = $('#gotit')
@@ -72,6 +73,7 @@ attachListeners = ->
   socket.on 'gameStart', ->
     gotit "Begin!"
     $('.tweetthis').slideUp()
+    $('.hint').removeClass 'hint'
 
   socket.on 'gameOver', (level, score) ->
     GAME_OVER = true
@@ -84,7 +86,7 @@ attachListeners = ->
     else if level < 10
       tweet += " Dare to dream."
     else
-      tweet += "We rule!"
+      tweet += " We rule!"
 
     $('.tweetthis').each (i, el) =>
       $el = $('a', el)
@@ -97,9 +99,19 @@ attachListeners = ->
   socket.on 'gotIt', ->
     gotit "Got it!"
     $('.myNote').removeClass 'myNote'
+    $('.hint').removeClass 'hint'
 
   socket.on 'waiting', (you, total) ->
     updateStatus "Waiting for other players (you are player #{you} of #{total} needed)..."
+
+
+attachHintListener = =>
+  socket.on 'hint', (notes) ->
+    for note in notes
+      $(".notes span[data-note-name='#{note}']").each (i, el) =>
+        $(el).addClass 'hint'
+        MIDI.noteOn MIDI_CHANNEL, $(el).data('note'), MIDI_VOLUME, 0
+
 
 
 updateStatus = (string) ->
