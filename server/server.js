@@ -138,7 +138,7 @@
       this.chordGenerator = new ChordGenerator;
       this.score = 0;
       this.level = 0;
-      this.timeout = null;
+      this.timer = null;
       this.chordGenerator.on('chordMatched', function() {
         var p, _i, _len, _ref;
         _this.level += 1;
@@ -176,19 +176,20 @@
     };
 
     Game.prototype.newTurn = function() {
-      var p, target, _i, _len, _ref, _results;
+      var p, target, timeout, _i, _len, _ref, _results;
       console.log("New turn.");
-      if (this.timeout != null) {
-        clearTimeout(this.timeout);
+      timeout = 20000 - (1000 * this.level);
+      if (this.timer != null) {
+        clearTimeout(this.timer);
       }
-      this.timeout = setTimeout(this.end, 20000 - (1000 * this.level));
+      this.timer = setTimeout(this.end, timeout);
       target = this.chordGenerator.getRandomChord();
       console.log("Broadcasting target " + target + " to all players.");
       _ref = this.players;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         p = _ref[_i];
-        _results.push(p.emit('target', target));
+        _results.push(p.emit('target', target, timeout));
       }
       return _results;
     };

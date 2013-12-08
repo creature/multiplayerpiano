@@ -69,7 +69,7 @@ class Game extends events.EventEmitter
     @chordGenerator = new ChordGenerator # Generator for chords
     @score = 0 # Number of points
     @level = 0 # Number of chords successfully played.
-    @timeout = null # How long until we finish the game?
+    @timer = null # How long until we finish the game?
     
     @chordGenerator.on 'chordMatched', =>
       @level += 1
@@ -93,12 +93,13 @@ class Game extends events.EventEmitter
 
   newTurn: =>
     console.log("New turn.")
-    if @timeout?
-      clearTimeout @timeout
-    @timeout = setTimeout this.end, 20000 - (1000 * @level)
+    timeout = 20000 - (1000 * @level)
+    if @timer?
+      clearTimeout @timer
+    @timer = setTimeout this.end, timeout
     target = @chordGenerator.getRandomChord()
     console.log "Broadcasting target " + target + " to all players."
-    p.emit('target', target) for p in @players
+    p.emit('target', target, timeout) for p in @players
   
   end: =>
     console.log "Game over; players scored #{@score}"

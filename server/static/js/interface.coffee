@@ -61,7 +61,8 @@ attachListeners = ->
     $("span[data-note='#{note}']").each (i, el) ->
       $(el).removeClass('theirNote')
 
-  socket.on 'target', (target) ->
+  socket.on 'target', (target, timeout) ->
+    animateProgressBar timeout
     if target is 'A' or target is 'E'
       updateStatus "Play an #{target} major chord!"
     else
@@ -85,3 +86,24 @@ attachListeners = ->
 updateStatus = (string) ->
   $('.gamestatus').each (i, el) ->
     $(el).text(string)
+
+timer = null
+started = null
+animateProgressBar = (timeout) ->
+  timeout -= 100
+  started = new Date().getTime()
+  if timer?
+    clearInterval timer
+  timer = setInterval ->
+    percentage = 1 - ((new Date().getTime() - started) / timeout)
+    if percentage < 0
+      clearInterval timer
+    else
+      color = "#5f5"
+      if percentage < 0.66
+        color = "#f95"
+      if percentage < 0.33
+        color = "#f55"
+      $('.timeleft span').css('width', "#{percentage * 100}%").css('background-color', color)
+  , 100
+

@@ -80,14 +80,16 @@ span.nonoffset {
     background-color: #5ff;
 }
 
+/* Prompts for what to do. */
 .gamestatus {
     border-radius: 10px;
     border: 1px solid blue;
     background: #99f;
     padding: 10px;
-    margin: 50px 0;
+    margin: 0 0 50px;
 }
 
+/* Popover prompts. */
 #gotit {
     position: absolute;
     bottom: 20px;
@@ -100,3 +102,20 @@ span.nonoffset {
     font-weight: bold;
 }
 
+/* Progress bars. */
+.timeleft {
+    height: 20px;
+    position: relative;
+    background: #555;
+    border-radius: 25px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.timeleft > span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background-color: #5f5;
+    border-radius: 25px;
+}
