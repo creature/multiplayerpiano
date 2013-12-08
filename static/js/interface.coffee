@@ -22,7 +22,8 @@ gotit = (text) ->
   $el.animate
     opacity: 0
     bottom: "+=100"
-  , "slow"
+  , 1200, "swing", =>
+    $el.hide()
   
 
 attachListeners = ->
@@ -70,10 +71,28 @@ attachListeners = ->
 
   socket.on 'gameStart', ->
     gotit "Begin!"
+    $('.tweetthis').slideUp()
 
   socket.on 'gameOver', (level, score) ->
     GAME_OVER = true
     updateStatus "Game over! Your team played #{level} chords correctly, and scored #{score}."
+    tweet = "text=My team just scored #{score} points from #{level} chords at Multiplayer Piano!"
+    if level is 0
+      tweet += " Boy, we suck."
+    else if level < 5
+      tweet += " Amateurs."
+    else if level < 10
+      tweet += " Dare to dream."
+    else
+      tweet += "We rule!"
+
+    $('.tweetthis').each (i, el) =>
+      $el = $('a', el)
+      link = $el.attr 'href'
+      link = link.replace /text=([^&]*)/, tweet
+      $el.attr 'href', link
+      $(el).slideDown()
+
 
   socket.on 'gotIt', ->
     gotit "Got it!"

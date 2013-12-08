@@ -88,11 +88,13 @@ span.nonoffset {
 
 /* Prompts for what to do. */
 .gamestatus {
-    border-radius: 10px;
+    border-radius: 25px;
     border: 1px solid blue;
     background: #99f;
     padding: 10px;
     margin: 0 0 50px;
+    text-align: center;
+    font-size: 180%;
 }
 
 /* Popover prompts. */
@@ -106,6 +108,7 @@ span.nonoffset {
     font-size: 600%;
     text-align: center;
     font-weight: bold;
+    color: #888;
 }
 
 /* Progress bars. */
@@ -124,4 +127,18 @@ span.nonoffset {
     width: 100%;
     background-color: #5f5;
     border-radius: 25px;
+}
+
+/* Tweet link. */
+.tweetthis {
+    text-align: center;
+    border: 1px solid yellow;
+    border-radius: 25px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    font-size: 140%;
+    background-color: #ff9;
+    margin-bottom: 50px;
 }

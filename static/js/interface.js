@@ -28,14 +28,17 @@
   };
 
   gotit = function(text) {
-    var $el;
+    var $el,
+      _this = this;
     $el = $('#gotit');
     $el.text(text);
     $el.show().css('bottom', '20px').css('opacity', 1);
     return $el.animate({
       opacity: 0,
       bottom: "+=100"
-    }, "slow");
+    }, 1200, "swing", function() {
+      return $el.hide();
+    });
   };
 
   attachListeners = function() {
@@ -93,11 +96,32 @@
       }
     });
     socket.on('gameStart', function() {
-      return gotit("Begin!");
+      gotit("Begin!");
+      return $('.tweetthis').slideUp();
     });
     socket.on('gameOver', function(level, score) {
+      var tweet,
+        _this = this;
       GAME_OVER = true;
-      return updateStatus("Game over! Your team played " + level + " chords correctly, and scored " + score + ".");
+      updateStatus("Game over! Your team played " + level + " chords correctly, and scored " + score + ".");
+      tweet = "text=My team just scored " + score + " points from " + level + " chords at Multiplayer Piano!";
+      if (level === 0) {
+        tweet += " Boy, we suck.";
+      } else if (level < 5) {
+        tweet += " Amateurs.";
+      } else if (level < 10) {
+        tweet += " Dare to dream.";
+      } else {
+        tweet += "We rule!";
+      }
+      return $('.tweetthis').each(function(i, el) {
+        var $el, link;
+        $el = $('a', el);
+        link = $el.attr('href');
+        link = link.replace(/text=([^&]*)/, tweet);
+        $el.attr('href', link);
+        return $(el).slideDown();
+      });
     });
     socket.on('gotIt', function() {
       gotit("Got it!");

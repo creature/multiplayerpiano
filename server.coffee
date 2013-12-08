@@ -13,6 +13,7 @@ server = http.createServer app
 server.listen process.env.PORT or 4000
 io = require('socket.io').listen server
 
+PLAYERS_PER_GAME = 1
 
 ###### EXTRACT THIS LATER 
 
@@ -106,7 +107,6 @@ class Game extends events.EventEmitter
     p.emit('gameOver', @level, @score) for p in @players
 
 class GameServer extends events.EventEmitter
-  @PLAYERS_PER_GAME = 3
   constructor: ->
     @waitingroom = []
     @games = []
@@ -114,13 +114,13 @@ class GameServer extends events.EventEmitter
   addPlayer: (player) ->
     console.log "Adding player (gameserver)."
     @waitingroom.push player
-    if @waitingroom.length >= GameServer.PLAYERS_PER_GAME
+    if @waitingroom.length >= PLAYERS_PER_GAME
       game = new Game
-      for i in [1..GameServer.PLAYERS_PER_GAME]
+      for i in [1..PLAYERS_PER_GAME]
         game.addPlayer @waitingroom.pop()
       game.start()
     else 
-      player.emit 'waiting', @waitingroom.length, GameServer.PLAYERS_PER_GAME
+      player.emit 'waiting', @waitingroom.length, PLAYERS_PER_GAME
 
       
 
