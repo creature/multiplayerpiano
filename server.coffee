@@ -10,7 +10,7 @@ app.use('/static', express.static __dirname + '/static')
 
 # Start server. 
 server = http.createServer app
-server.listen 4000
+server.listen process.env.PORT or 4000
 io = require('socket.io').listen server
 
 

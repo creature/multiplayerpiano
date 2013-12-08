@@ -19,7 +19,7 @@
 
   server = http.createServer(app);
 
-  server.listen(4000);
+  server.listen(process.env.PORT || 4000);
 
   io = require('socket.io').listen(server);
 
