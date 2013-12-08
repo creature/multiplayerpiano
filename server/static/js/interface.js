@@ -27,9 +27,10 @@
     });
   };
 
-  gotit = function() {
+  gotit = function(text) {
     var $el;
     $el = $('#gotit');
+    $el.text(text);
     $el.show().css('bottom', '20px').css('opacity', 1);
     return $el.animate({
       opacity: 0,
@@ -90,12 +91,15 @@
         return updateStatus("Play a " + target + " major chord!");
       }
     });
+    socket.on('gameStart', function() {
+      return gotit("Begin!");
+    });
     socket.on('gameOver', function(level, score) {
       GAME_OVER = true;
       return updateStatus("Game over! Your team played " + level + " chords correctly, and scored " + score + ".");
     });
     socket.on('gotIt', function() {
-      gotit();
+      gotit("Got it!");
       return $('.myNote').removeClass('myNote');
     });
     return socket.on('waiting', function(you, total) {

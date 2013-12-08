@@ -15,8 +15,9 @@ init = ->
     callback: ->
       MIDI.setVolume MIDI_CHANNEL, MIDI_VOLUME
 
-gotit = ->
+gotit = (text) ->
   $el = $('#gotit')
+  $el.text text
   $el.show().css('bottom', '20px').css('opacity', 1)
   $el.animate
     opacity: 0
@@ -66,12 +67,15 @@ attachListeners = ->
     else
       updateStatus "Play a #{target} major chord!"
 
+  socket.on 'gameStart', ->
+    gotit "Begin!"
+
   socket.on 'gameOver', (level, score) ->
     GAME_OVER = true
     updateStatus "Game over! Your team played #{level} chords correctly, and scored #{score}."
 
   socket.on 'gotIt', ->
-    gotit()
+    gotit "Got it!"
     $('.myNote').removeClass 'myNote'
 
   socket.on 'waiting', (you, total) ->
