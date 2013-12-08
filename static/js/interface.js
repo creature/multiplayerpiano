@@ -108,7 +108,7 @@
     socket.on('gameStart', function() {
       gotit("Begin!");
       $('.tweetthis').slideUp();
-      return $('.hint').removeClass('hint');
+      return $('.notes .hint').removeClass('hint');
     });
     socket.on('gameOver', function(level, score) {
       var tweet,
@@ -136,8 +136,9 @@
     });
     socket.on('gotIt', function() {
       gotit("Got it!");
-      $('.myNote').removeClass('myNote');
-      return $('.hint').removeClass('hint');
+      $('.notes .myNote').removeClass('myNote');
+      $('.notes .hint').removeClass('hint');
+      return $('.notes .theirNote').removeClass('theirNote');
     });
     return socket.on('waiting', function(you, total) {
       return updateStatus("Waiting for other players (you are player " + you + " of " + total + " needed)...");

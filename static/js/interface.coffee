@@ -79,7 +79,7 @@ attachListeners = ->
   socket.on 'gameStart', ->
     gotit "Begin!"
     $('.tweetthis').slideUp()
-    $('.hint').removeClass 'hint'
+    $('.notes .hint').removeClass 'hint'
 
   socket.on 'gameOver', (level, score) ->
     GAME_OVER = true
@@ -104,8 +104,9 @@ attachListeners = ->
 
   socket.on 'gotIt', ->
     gotit "Got it!"
-    $('.myNote').removeClass 'myNote'
-    $('.hint').removeClass 'hint'
+    $('.notes .myNote').removeClass 'myNote'
+    $('.notes .hint').removeClass 'hint'
+    $('.notes .theirNote').removeClass 'theirNote'
 
   socket.on 'waiting', (you, total) ->
     updateStatus "Waiting for other players (you are player #{you} of #{total} needed)..."
