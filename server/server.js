@@ -71,6 +71,7 @@
       console.log("Value: " + this.arraysEqual(this.notes, this.currentNotes));
       if (this.arraysEqual(this.notes, this.currentNotes)) {
         console.log("Chord matched!");
+        this.notes = [];
         return this.emit('chordMatched');
       }
     };
@@ -136,9 +137,17 @@
       this.players = [];
       this.chordGenerator = new ChordGenerator;
       this.score = 0;
+      this.level = 0;
       this.timeout = null;
       this.chordGenerator.on('chordMatched', function() {
-        _this.score += 1;
+        var p, _i, _len, _ref;
+        _this.level += 1;
+        _this.score = _this.score + (100 * _this.level);
+        _ref = _this.players;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          p = _ref[_i];
+          p.emit('gotIt');
+        }
         return _this.newTurn();
       });
     }
@@ -172,7 +181,7 @@
       if (this.timeout != null) {
         clearTimeout(this.timeout);
       }
-      this.timeout = setTimeout(this.end, 10000 - (1000 * this.score));
+      this.timeout = setTimeout(this.end, 20000 - (1000 * this.level));
       target = this.chordGenerator.getRandomChord();
       console.log("Broadcasting target " + target + " to all players.");
       _ref = this.players;
@@ -191,7 +200,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         p = _ref[_i];
-        _results.push(p.emit('gameOver', this.score));
+        _results.push(p.emit('gameOver', this.level, this.score));
       }
       return _results;
     };
@@ -221,6 +230,8 @@
           game.addPlayer(this.waitingroom.pop());
         }
         return game.start();
+      } else {
+        return player.emit('waiting', this.waitingroom.length, GameServer.PLAYERS_PER_GAME);
       }
     };
 

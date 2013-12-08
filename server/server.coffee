@@ -42,6 +42,7 @@ class ChordGenerator extends events.EventEmitter
     console.log "Value: " + this.arraysEqual @notes, @currentNotes
     if this.arraysEqual @notes, @currentNotes
       console.log "Chord matched!"
+      @notes = []
       this.emit 'chordMatched'
 
   noteOff: (note) =>
@@ -66,11 +67,14 @@ class Game extends events.EventEmitter
     console.log "Starting a new game."
     @players = [] # Players participating in this game. 
     @chordGenerator = new ChordGenerator # Generator for chords
-    @score = 0 # Number of successfully played chords
+    @score = 0 # Number of points
+    @level = 0 # Number of chords successfully played.
     @timeout = null # How long until we finish the game?
     
     @chordGenerator.on 'chordMatched', =>
-      @score += 1
+      @level += 1
+      @score = @score + (100 * @level)
+      p.emit 'gotIt' for p in @players
       this.newTurn()
 
   addPlayer: (player) =>
@@ -91,14 +95,14 @@ class Game extends events.EventEmitter
     console.log("New turn.")
     if @timeout?
       clearTimeout @timeout
-    @timeout = setTimeout this.end, 10000 - (1000 * @score)
+    @timeout = setTimeout this.end, 20000 - (1000 * @level)
     target = @chordGenerator.getRandomChord()
     console.log "Broadcasting target " + target + " to all players."
     p.emit('target', target) for p in @players
   
   end: =>
     console.log "Game over; players scored #{@score}"
-    p.emit('gameOver', @score) for p in @players
+    p.emit('gameOver', @level, @score) for p in @players
 
 class GameServer extends events.EventEmitter
   @PLAYERS_PER_GAME = 1
@@ -114,6 +118,8 @@ class GameServer extends events.EventEmitter
       for i in [1..GameServer.PLAYERS_PER_GAME]
         game.addPlayer @waitingroom.pop()
       game.start()
+    else 
+      player.emit 'waiting', @waitingroom.length, GameServer.PLAYERS_PER_GAME
 
       
 
