@@ -34,6 +34,12 @@ strong {
     font-weight: bold;
 }
 
+.notes {
+    margin-left: auto;
+    margin-right: auto;
+    width: 88%;
+}
+
 .notes span {
     display: block;
     position: relative;
@@ -72,11 +78,11 @@ span.nonoffset {
     max-width: 960px;
 }
 
-.myNote {
+.notes .myNote {
     background-color: #ff5;
 }
 
-.theirNote {
+.notes .theirNote {
     background-color: #5ff;
 }
 
