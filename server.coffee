@@ -13,7 +13,7 @@ server = http.createServer app
 server.listen process.env.PORT or 4000
 io = require('socket.io').listen server
 
-PLAYERS_PER_GAME = 1
+PLAYERS_PER_GAME = 2
 
 ###### EXTRACT THIS LATER 
 
@@ -36,11 +36,14 @@ class ChordGenerator extends events.EventEmitter
     @current
 
   noteOn: (note) =>
-    console.log "Note on: #{@mu.midiToNoteName note}"
-    @notes.push(@mu.midiToNoteName note)
+    noteName = @mu.midiToNoteName note
+    console.log "Note on: #{noteName}"
+    @notes.push(noteName) if noteName not in @notes
     console.log "Notes: #{@notes}"
     console.log "CurrentNotes: #{@currentNotes}"
     console.log "Value: " + this.arraysEqual @notes, @currentNotes
+    if noteName not in @currentNotes
+      @score -= (@level * 20)
     if this.arraysEqual @notes, @currentNotes
       console.log "Chord matched!"
       @notes = []

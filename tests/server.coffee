@@ -22,4 +22,6 @@ test "Check array comparison.", (t) ->
   cg = new ChordGenerator
   t.ok cg.arraysEqual(["A"], ["A"]), "Arrays with A in are equal."
   t.notOk cg.arraysEqual(["A"], ["B"]), "Arrays with A and B in are not equal."
+  t.ok cg.arraysEqual(["A", "B", "C"], ["A", "B", "C"]), "Longer arrays equal."
+  t.ok cg.arraysEqual(["A", "B", "C"], ["C", "B", "A"]), "Order doesn't matter."
   t.end()

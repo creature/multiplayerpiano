@@ -3,7 +3,8 @@
   var ChordGenerator, Game, GameServer, MIDIUtil, PLAYERS_PER_GAME, app, events, express, fs, gameServer, http, io, server,
     _this = this,
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   express = require('express');
 
@@ -23,7 +24,7 @@
 
   io = require('socket.io').listen(server);
 
-  PLAYERS_PER_GAME = 1;
+  PLAYERS_PER_GAME = 2;
 
   ChordGenerator = (function(_super) {
 
@@ -66,11 +67,18 @@
     };
 
     ChordGenerator.prototype.noteOn = function(note) {
-      console.log("Note on: " + (this.mu.midiToNoteName(note)));
-      this.notes.push(this.mu.midiToNoteName(note));
+      var noteName;
+      noteName = this.mu.midiToNoteName(note);
+      console.log("Note on: " + noteName);
+      if (__indexOf.call(this.notes, noteName) < 0) {
+        this.notes.push(noteName);
+      }
       console.log("Notes: " + this.notes);
       console.log("CurrentNotes: " + this.currentNotes);
       console.log("Value: " + this.arraysEqual(this.notes, this.currentNotes));
+      if (__indexOf.call(this.currentNotes, noteName) < 0) {
+        this.score -= this.level * 20;
+      }
       if (this.arraysEqual(this.notes, this.currentNotes)) {
         console.log("Chord matched!");
         this.notes = [];
