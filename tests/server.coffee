@@ -9,7 +9,6 @@ test "Ensure that MIDI conversion works OK.", (t) ->
     t.equal mu.midiToNoteName(79), "G"
     t.equal mu.midiToNoteName(82), "Bb"
     t.end()
-  t.end()
 
   t.test "Ensure root offset works.", (t) =>
     t.equal mu.offsetFromRoot("C", "C"), 0
@@ -17,6 +16,7 @@ test "Ensure that MIDI conversion works OK.", (t) ->
     t.equal mu.offsetFromRoot("C", "F#"), 6
     t.equal mu.offsetFromRoot("A", "D"), 5
     t.end()
+  t.end()
 
 test "Check array comparison.", (t) ->
   cg = new ChordGenerator
