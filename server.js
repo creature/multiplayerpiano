@@ -21,11 +21,13 @@
   // Start server.
   server = http.createServer(app);
 
-  server.listen(process.env.PORT || 4000);
-
   socket = require('socket.io');
 
   io = new socket.Server(server);
+
+  if (process.argv[2] === "start") {
+    server.listen(process.env.PORT || 4000);
+  }
 
   PLAYERS_PER_GAME = 4;
 

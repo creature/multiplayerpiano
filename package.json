@@ -14,7 +14,8 @@
         "tap": "~21.1"
     },
     "scripts": {
-        "test": "tap ./tests"
+        "test": "tap ./tests",
+        "serve": "node server.js start"
     },
     "engines": {
         "node": "22.14.0"

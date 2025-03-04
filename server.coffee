@@ -10,9 +10,11 @@ app.use('/static', express.static __dirname + '/static')
 
 # Start server.
 server = http.createServer app
-server.listen process.env.PORT or 4000
 socket = require('socket.io')
 io = new socket.Server(server)
+
+if process.argv[2] == "start"
+  server.listen process.env.PORT or 4000
 
 PLAYERS_PER_GAME = 4
 
