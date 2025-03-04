@@ -2,25 +2,21 @@
     "name": "keytar-hero",
     "main": "server.js",
     "author": "Alex Pounds <alex@alexpounds.com>",
-
     "directories": {
         "tests": "tests"
     },
-
     "dependencies": {
-        "socket.io": "~0.9.16",
-        "express": "~3.4.6"
+        "express": "~4.21",
+        "socket.io": "~4.8"
     },
-
     "devDependencies": {
-        "tap": "~0.4.6"
+        "coffeescript": "^2.7.0",
+        "tap": "~21.1"
     },
-
     "scripts": {
         "test": "tap ./tests"
     },
-
     "engines": {
-        "node": "0.10.22"
+        "node": "22.14.0"
     }
 }

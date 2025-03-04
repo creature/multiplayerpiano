@@ -1,21 +1,22 @@
-# Load requirements. 
+# Load requirements.
 express = require 'express'
 events = require 'events'
 app = express()
 http = require 'http'
 fs = require 'fs'
 
-# Serve static content. 
+# Serve static content.
 app.use('/static', express.static __dirname + '/static')
 
-# Start server. 
+# Start server.
 server = http.createServer app
 server.listen process.env.PORT or 4000
-io = require('socket.io').listen server
+socket = require('socket.io')
+io = new socket.Server(server)
 
 PLAYERS_PER_GAME = 4
 
-###### EXTRACT THIS LATER 
+###### EXTRACT THIS LATER
 
 class ChordGenerator extends events.EventEmitter
   @NOTES_MAJOR = [0, 4, 7]
@@ -24,6 +25,7 @@ class ChordGenerator extends events.EventEmitter
   @TYPES = ['Major', 'Minor']
 
   constructor: ->
+    super arguments...
     @target = null
     @notes = []
     @mu = new MIDIUtil
@@ -72,12 +74,13 @@ exports.ChordGenerator = ChordGenerator
 class Game extends events.EventEmitter
   constructor: ->
     console.log "Starting a new game."
-    @players = [] # Players participating in this game. 
+    super arguments...
+    @players = [] # Players participating in this game.
     @chordGenerator = new ChordGenerator # Generator for chords
     @score = 0 # Number of points
     @level = 0 # Number of chords successfully played.
     @timer = null # How long until we finish the game?
-    
+
     @chordGenerator.on 'chordMatched', =>
       @level += 1
       @score = @score + (100 * @level)
@@ -87,13 +90,13 @@ class Game extends events.EventEmitter
   addPlayer: (player) =>
     console.log "Adding player (game)"
     @players.push player
-    player.on 'note_on', (note) => 
+    player.on 'note_on', (note) =>
       @chordGenerator.noteOn note
     player.on 'note_off', (note) =>
       @chordGenerator.noteOff note
 
   start: =>
-    # Run a game. 
+    # Run a game.
     console.log("Starting game.")
     p.emit 'gameStart' for p in @players
     this.newTurn()
@@ -109,13 +112,14 @@ class Game extends events.EventEmitter
     p.emit('target', target, timeout) for p in @players
     if @level < 5
       p.emit('hint', @chordGenerator.getNotes()) for p in @players
-  
+
   end: =>
     console.log "Game over; players scored #{@score}"
     p.emit('gameOver', @level, @score) for p in @players
 
 class GameServer extends events.EventEmitter
   constructor: ->
+    super arguments...
     @waitingroom = []
     @games = []
 
@@ -127,10 +131,10 @@ class GameServer extends events.EventEmitter
       for i in [1..PLAYERS_PER_GAME]
         game.addPlayer @waitingroom.pop()
       game.start()
-    else 
+    else
       player.emit 'waiting', @waitingroom.length, PLAYERS_PER_GAME
 
-      
+
 
 class MIDIUtil
   @NOTES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B']
@@ -152,7 +156,7 @@ exports.MIDIUtil = MIDIUtil
 
 
 gameServer = new GameServer
-# Serve standard template. 
+# Serve standard template.
 app.get '/', (req, res) ->
   fs.createReadStream('./views/index.html').pipe res
 
